@@ -35,7 +35,7 @@ class ArticleResource extends JsonResource
             ]
         ];
     }
-    public function whith($request)
+    public function with($request)
     {
         return [
             'Status' => 'Success',

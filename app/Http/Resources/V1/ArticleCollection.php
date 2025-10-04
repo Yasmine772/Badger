@@ -18,7 +18,7 @@ class ArticleCollection extends ResourceCollection
             'data' => $this->collection,
         ];
     }
-    public function whith($request)
+    public function with($request)
     {
         return [
             'Status' => 'Success',
