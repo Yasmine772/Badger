@@ -41,7 +41,7 @@ class ArticleResource extends JsonResource
             'Status' => 'Success',
         ];
     }
-    public function whithResponse($request, $response)
+    public function withResponse($request, $response)
     {
         return $response->header('accept', 'application/json');
     }

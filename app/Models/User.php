@@ -4,7 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Trait\HasAuthor;
+use App\Traits\HasAuthor;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -14,7 +14,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable,HasApiTokens;
+    use HasFactory, Notifiable , HasApiTokens;
     use HasAuthor;
 
     /**
@@ -50,16 +50,5 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    // public function id() :string
-    // {
-    //     return (string)$this->id;
-    // }
-    // public function name() :string
-    // {
-    //     return $this->name;
-    // }
-    // public function articles():HasMany
-    // {
-    //     return $this->hasMany(Article::class);
-    // }
+
 }

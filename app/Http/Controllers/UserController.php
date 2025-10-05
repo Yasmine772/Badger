@@ -2,60 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Profile;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\SignInUserRequest;
+use App\Http\Requests\SignUpUserRequest;
+use App\Services\UserService;
+use App\Traits\apiResponseTrait;
+
+use Throwable;
 
 class UserController extends Controller
 {
-    public function register(Request $request): \Illuminate\Http\JsonResponse
+    use apiResponseTrait;
+    private UserService $userService;
+    public function __construct(UserService $userService)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|string|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-        return response()->json([
-            'message' => 'User registered Successfuly',
-            'User' => $user
-        ], 201);
+        $this->userService = $userService;
     }
-    public function login(Request $request)
+    public function signUp(SignUpUserRequest $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
-        if (!Auth::attempt($request->only('email', 'password')))
-            return response()->json(
-                [
-                    'message' => 'Invalid email or password'
-                ],
-                401
+        try {
+            $data = $this->userService->signUp($request->validated());
+            return $this->successResponse($data, 'User created successfully', 201);
+        } catch (Throwable $th) {
+            return $this->ErrorResponse($th->getMessage(), $th->getCode());
+        }
+    }
+
+    public function signIn(SignInUserRequest $request)
+    {
+        try {
+            $data = $this->userService->signIn($request->validated());
+            return $this->successResponse(
+                $data,
+                'User signed in successfully',
+                200
             );
-        $user = User::where('email', $request->email)->firstOrFail();
-        $token = $user->createToken('token')->plainTextToken;
-        return response()->json([
-            'message' => 'Login Successfuly',
-            'User' => $user,
-            'Token' => $token,
-        ], 200);
+        }
+        catch (Throwable $th)
+        {
+            return $this->ErrorResponse($th->getMessage(), $th->getCode());
+        }
     }
-    public function logout(Request $request)
-    {
-        $request->user()->currentAccessToken()->delete();
-        return response()->json(
-            [
-                'message' => 'Logout Successfully'
-            ],
-            200
-        );
+
+        public function logout()
+        {
+        try {
+            $this->userService->logout();
+            return $this->successResponse(
+                null,
+                'User Logout Successfully',
+                200
+            );
+        }
+        catch (Throwable $th)
+        {
+            return $this->ErrorResponse($th->getMessage(), $th->getCode());
+        }
+        }
     }
-}
+

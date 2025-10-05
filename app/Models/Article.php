@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Trait\HasAuthor;
-use App\Trait\ModelHelpers;
+use App\Traits\HasAuthor;
+use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
