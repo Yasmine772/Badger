@@ -14,9 +14,8 @@ class ArticleCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return [
-            'data' => $this->collection,
-        ];
+        return
+            $this->collection->toArray();
     }
     public function with($request)
     {

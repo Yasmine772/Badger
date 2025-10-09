@@ -12,9 +12,7 @@ class ArticleService
 {
     public function index()
     {
-        return [
-            new ArticleCollection(Article::cursor())
-        ];
+        return new ArticleCollection(Article::cursor());
     }
 
     public function store(array $data)
@@ -25,10 +23,8 @@ class ArticleService
             'body' => $data['body'],
             'author_id' => Auth::id() ?? 1
         ]);
-        return
-            [
-                new ArticleResource($article)
-            ];
+        return new ArticleResource($article);
+
     }
 
     public function show(Article $article)

@@ -11,7 +11,7 @@ use App\Traits\apiResponseTrait;
 class UserService
 {
     use apiResponseTrait;
-    public function signUp(array $data)
+    public function signup(array $data)
     {
         $user = User::create([
             'name'=> $data['name'],

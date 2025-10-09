@@ -28,8 +28,7 @@ class ArticleController extends Controller
     public function index()
     {
         try {
-            $data = $this->articleService->index();
-            return $this->successResponse($data, 'Success', 200);
+            return $this->successResponse($this->articleService->index(), 'Success', 200);
         } catch (Throwable $th) {
             return $this->ErrorResponse($th->getMessage(), $th->getCode());
         }

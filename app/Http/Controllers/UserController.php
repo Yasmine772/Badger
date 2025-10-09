@@ -17,20 +17,20 @@ class UserController extends Controller
     {
         $this->userService = $userService;
     }
-    public function signUp(SignUpUserRequest $request)
+    public function signup(SignUpUserRequest $request): \Illuminate\Http\JsonResponse
     {
         try {
-            $data = $this->userService->signUp($request->validated());
+            $data = $this->userService->signup($request->validated());
             return $this->successResponse($data, 'User created successfully', 201);
         } catch (Throwable $th) {
             return $this->ErrorResponse($th->getMessage(), $th->getCode());
         }
     }
 
-    public function signIn(SignInUserRequest $request)
+    public function signin(SignInUserRequest $request)
     {
         try {
-            $data = $this->userService->signIn($request->validated());
+            $data = $this->userService->signin($request->validated());
             return $this->successResponse(
                 $data,
                 'User signed in successfully',

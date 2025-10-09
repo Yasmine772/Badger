@@ -18,7 +18,8 @@ class Article extends Model
         'title',
         'slug',
         'body',
-        'author_id'
+        'author_id',
+
     ];
 
     // public function id(): string
