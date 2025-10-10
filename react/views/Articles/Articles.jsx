@@ -5,85 +5,129 @@ import { Link } from "react-router-dom";
 export default function ArticlesList() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [errors, setErrors] = useState(null);
+  const [search, setSearch] = useState("");
   useEffect(() => {
     getArticles();
   }, []);
 
-  const getArticles = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosClient.get("/v1/articles");
-      console.log("Response:", response.data);
+  const getArticles = () => {
+    setLoading(true);
+    axiosClient
+      .get("/v1/articles")
+      .then((response) => {
+        setArticles(response.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        const response = err.response;
+        if (response && response.status === 422) {
+          setErrors(response.data.errors);
+        }
+        setLoading(false);
+        console.error("Error fetching articles:", err);
+      });
+  };
 
-
-      setArticles(response.data);
-    } catch (error) {
-      console.error("Error fetching articles:", error);
-    } finally {
-      setLoading(false);
-    }
-  }
-  const onDelete = article =>{
-    if(! window.confirm("Are you sure you want to delete this article?")){
-      return;
-    }
-    axiosClient.delete(`/v1/articles/${article.id}`)
+  const onDelete = (article) => {
+    axiosClient
+      .delete(`/v1/articles/${article.id}`)
       .then(() => {
-        // Notification
         getArticles();
       })
-  }
+      .catch((err) => {
+        const response = err.response;
+        if (response && response.status === 422) {
+          setErrors(response.data.errors);
+        }
+        console.error("Error deleting article:", err);
+      });
+  };
+
+  const filteredArticles = articles.filter((article) =>
+    article.attribute.title.toLowerCase().includes(search.toLowerCase())
+  )
+.sort((a, b) => new Date(b.attribute.created_at) - new Date(a.attribute.created_at));
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div>
         <h1>Articles</h1>
-        <Link to="/articleList/create" className="btn-add">
-          Add Article
-        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
+          <input
+            type="text"
+            placeholder="Search by title..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ padding: "0.5rem", flexGrow: 1 }}
+          />
+          <Link to="/articleList/create" className="btn-add" style={{ whiteSpace: "nowrap" }}>
+            Add Article
+          </Link>
+        </div>
+
+
       </div>
 
       <div className="card animated fadeInDown">
-          <table>
-            <thead>
+        <table>
+          <thead>
+          <tr>
+            <th>Title</th>
+            <th>Slug</th>
+            <th>Create Date</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          {loading && (
+            <tbody>
             <tr>
-              <th>Title</th>
-              <th>Slug</th>
-              <th>Create Date</th>
-              <th>Actions</th>
+              <td colSpan="4" className="text-center">
+                Loading...
+              </td>
             </tr>
-            </thead>
-            {loading &&
-              <tbody>
-              <tr>
-                <td colSpan="4" className="text-center">
-                  Loading...
+            </tbody>
+          )}
+          {!loading && (
+            <tbody>
+            {filteredArticles.map((article) => (
+              <tr key={article.id}>
+                <td>{article.attribute.title}</td>
+                <td>{article.attribute.slug}</td>
+                <td>{article.attribute.created_at}</td>
+                <td>
+                  <Link
+                    className="btn-view"
+                    to={`/showArticle/${article.id}`}
+                  >
+                    Show
+                  </Link>
+                  &nbsp;
+                  <Link className="btn-edit" to={`/articleList/${article.id}`}>
+                    Edit
+                  </Link>
+                  &nbsp;
+                  <button
+                    onClick={() => onDelete(article)}
+                    className="btn-delete"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
-              </tbody>
-            }
-            {!loading &&
-            <tbody>
-            {articles
-              .map(article => (
-                <tr key={article.id}>
-                  <td>{article.attribute.title}</td>
-                  <td>{article.attribute.slug}</td>
-                  <td>{article.attribute.created_at}</td>
-                  <td>
-                    <Link className="btn-edit" to={`/articleList/${article.id}`} >Edit</Link>
-                    &nbsp;
-                    <button onClick={ev => onDelete(article)} className="btn-delete">Delete</button>
-                  </td>
-                </tr>
-              ))
-            }
+            ))}
             </tbody>
-            }
-          </table>
-
+          )}
+        </table>
       </div>
+
+      {errors && (
+        <div className="text-center text-red-500">
+          {Object.values(errors).map((errMsg, idx) => (
+            <p key={idx}>{errMsg}</p>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

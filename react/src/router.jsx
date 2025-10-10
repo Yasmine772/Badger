@@ -2,7 +2,6 @@ import {createBrowserRouter, Navigate} from "react-router-dom";
 import Signup from "../views/Authentication/Signup.jsx";
 import Signin from "../views/Authentication/Signin.jsx";
 import Articles from "../views/Articles/Articles.jsx";
-import EditArticle from "../views/Articles/EditArticle.jsx";
 import ShowArticle from "../views/Articles/ShowArticle.jsx";
 import NotFound from "../views/NotFound.jsx";
 import GuestLayout from "./components/GuestLayout.jsx";
@@ -21,20 +20,13 @@ const router = createBrowserRouter([
         path: '/' ,
         element : <Navigate to="/articleList "/>
       },
-      {
-        path : '/dashboard',
-        element : <Dashboard />
-      },
+
       {
         path : '/articleList',
         element : <Articles/>
       },
       {
-        path : '/editArticle',
-        element : <EditArticle/>
-      },
-      {
-        path : '/showArticle',
+        path : '/showArticle/:id',
         element : <ShowArticle/>
       },
       {

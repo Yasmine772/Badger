@@ -60,7 +60,7 @@ export default function ArticleForm() {
 
   return (
     <div>
-      {article.id && <h1>Update Article : {article.title}</h1>}
+      { article.id && <h1>Update Article : {article.title}</h1>}
       {!article.id && <h1>New Article</h1>}
 
       <div className="card animated fadeInDown">
